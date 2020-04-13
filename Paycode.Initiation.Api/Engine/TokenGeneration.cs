@@ -1,7 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
+using System.IO;
 using System.Linq;
+using System.Net;
+using System.Security.Cryptography;
+using System.Text;
 using System.Web;
+using Newtonsoft.Json;
+using NLog;
+using Paycode.Initiation.Api.DTO;
 
 namespace Paycode.Initiation.Api.Engine
 {
@@ -70,7 +78,7 @@ namespace Paycode.Initiation.Api.Engine
             nLogger.Info("headers  " + headers);
         }
         public string GetAuthorizationToken(String SessionKey,
-             String additionalParameters, Poco.MobileTokenRequest tokenrequest)
+             String additionalParameters, MobileTokenRequest tokenrequest)
         {
             string responseString = "";
             try
@@ -210,7 +218,7 @@ namespace Paycode.Initiation.Api.Engine
         }
 
         public string QueryPaycode(String SessionKey,
-          String subsciberId, Poco.QueryPayCodeStatus querypayCodeStatus)
+          String subsciberId, QueryPayCodeStatus querypayCodeStatus)
         {
             string responseString = "";
             try
@@ -352,7 +360,7 @@ namespace Paycode.Initiation.Api.Engine
 
 
         public string CancelPaycode(String SessionKey,
-    String subsciberId, Poco.CancelPayCodeRequest cancelPayCodeReq)
+    String subsciberId, CancelPayCodeRequest cancelPayCodeReq)
         {
             string responseString = "";
             try
