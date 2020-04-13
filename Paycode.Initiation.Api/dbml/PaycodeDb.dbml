@@ -1,0 +1,79 @@
+﻿<?xml version="1.0" encoding="utf-8"?><Database Name="PaycodeDB" Class="PaycodeDbDataContext" xmlns="http://schemas.microsoft.com/linqtosql/dbml/2007">
+  <Connection Mode="WebSettings" ConnectionString="Data Source=.\sqlexpress;Initial Catalog=PaycodeDB;Integrated Security=True" SettingsObjectName="System.Configuration.ConfigurationManager.ConnectionStrings" SettingsPropertyName="PaycodeDBConnectionString" Provider="System.Data.SqlClient" />
+  <Table Name="dbo.CardlessWithdrawalAuthorisation" Member="CardlessWithdrawalAuthorisations">
+    <Type Name="CardlessWithdrawalAuthorisation">
+      <Column Name="ID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="TransactionID" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="AuthorisationDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Column Name="ISW_IP" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="Amount" Type="System.Decimal" DbType="Decimal(18,2)" CanBeNull="true" />
+      <Column Name="TransactionType" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="AccountNumber" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="CardlessWithdrawalTransactionID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="IsReversed" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
+      <Column Name="DateReversed" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Column Name="FinacleResponse" Type="System.String" DbType="VarChar(150)" CanBeNull="true" />
+      <Column Name="FinacleStan" Type="System.String" DbType="VarChar(150)" CanBeNull="true" />
+      <Column Name="FinacleTransactionDateTime" Type="System.String" DbType="VarChar(150)" CanBeNull="true" />
+      <Association Name="CardlessWithdrawalAuthorisation_CardlessWithdrawalTransactionReversal" Member="CardlessWithdrawalTransactionReversals" ThisKey="ID" OtherKey="AuthorizationID" Type="CardlessWithdrawalTransactionReversal" />
+      <Association Name="CardlessWithdrawalTransaction_CardlessWithdrawalAuthorisation" Member="CardlessWithdrawalTransaction" ThisKey="CardlessWithdrawalTransactionID" OtherKey="ID" Type="CardlessWithdrawalTransaction" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.CardlessWithdrawalAuthorisationRequestLog" Member="CardlessWithdrawalAuthorisationRequestLogs">
+    <Type Name="CardlessWithdrawalAuthorisationRequestLog">
+      <Column Name="ID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="TransactionID" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="RequestDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Column Name="ISW_IP" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="Amount" Type="System.Decimal" DbType="Decimal(18,2)" CanBeNull="true" />
+      <Column Name="TransactionType" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="ProviderToken" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="AccountNumber" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="IsValid" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
+      <Column Name="ResponseMessage" Type="System.String" DbType="VarChar(100)" CanBeNull="true" />
+      <Column Name="FinacleResponse" Type="System.String" DbType="VarChar(150)" CanBeNull="true" />
+      <Column Name="FinacleStan" Type="System.String" DbType="VarChar(150)" CanBeNull="true" />
+      <Column Name="FinacleTransactionDateTime" Type="System.String" DbType="VarChar(150)" CanBeNull="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.CardlessWithdrawalTransaction" Member="CardlessWithdrawalTransactions">
+    <Type Name="CardlessWithdrawalTransaction">
+      <Column Name="ID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="TransactionReference" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="CIF" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="AccountNumber" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="RequestDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Column Name="ExpiryDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Column Name="TransactionAmount" Type="System.Decimal" DbType="Decimal(18,2)" CanBeNull="true" />
+      <Column Name="AmountAuthorized" Type="System.Decimal" DbType="Decimal(18,2)" CanBeNull="true" />
+      <Column Name="TokenUsageCount" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="SourceChannel" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="PaymentMethodTypeCode" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="PaymentMethodCode" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="FrontEndPartnerId" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="TokenLifeTimeInMinutes" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="PayWithMobileChannel" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="ProviderToken" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="TransactionType" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="CodeGenerationChannel" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="OneTimePassword" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="PayWithMobileToken" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="IsTokenUsed" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
+      <Column Name="IsExpired" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
+      <Column Name="IsCanceled" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
+      <Column Name="AuthorizationSessionKey" Type="System.String" DbType="VarChar(350)" CanBeNull="true" />
+      <Column Name="ReversalSessionKey" Type="System.String" DbType="VarChar(350)" CanBeNull="true" />
+      <Column Name="LienID" Type="System.String" DbType="VarChar(350)" CanBeNull="true" />
+      <Association Name="CardlessWithdrawalTransaction_CardlessWithdrawalAuthorisation" Member="CardlessWithdrawalAuthorisations" ThisKey="ID" OtherKey="CardlessWithdrawalTransactionID" Type="CardlessWithdrawalAuthorisation" />
+    </Type>
+  </Table>
+  <Table Name="dbo.CardlessWithdrawalTransactionReversal" Member="CardlessWithdrawalTransactionReversals">
+    <Type Name="CardlessWithdrawalTransactionReversal">
+      <Column Name="ID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="AuthorizationID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="ReversalDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Column Name="ISW_IP" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Association Name="CardlessWithdrawalAuthorisation_CardlessWithdrawalTransactionReversal" Member="CardlessWithdrawalAuthorisation" ThisKey="AuthorizationID" OtherKey="ID" Type="CardlessWithdrawalAuthorisation" IsForeignKey="true" />
+    </Type>
+  </Table>
+</Database>

@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ordesignerObjectsDiagram dslVersion="1.0.0.0" absoluteBounds="0, 0, 11, 10.25" name="PaycodeDb">
+  <DataContextMoniker Name="/PaycodeDbDataContext" />
+  <nestedChildShapes>
+    <classShape Id="66221d58-fbb3-4d98-954d-d08e8a87d43b" absoluteBounds="3.5, 2.375, 2, 3.3093082682291666">
+      <DataClassMoniker Name="/PaycodeDbDataContext/CardlessWithdrawalAuthorisation" />
+      <nestedChildShapes>
+        <elementListCompartment Id="ca5792fd-6ea3-41a9-9cbf-2963b28a1ac6" absoluteBounds="3.515, 2.835, 1.9700000000000002, 2.7493082682291665" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="bb421194-245c-43ed-8b65-755d6820c44c" absoluteBounds="3.75, 6.75, 2, 3.3093082682291666">
+      <DataClassMoniker Name="/PaycodeDbDataContext/CardlessWithdrawalAuthorisationRequestLog" />
+      <nestedChildShapes>
+        <elementListCompartment Id="3bf21b4f-22c7-4426-901c-598b7b6d5fcb" absoluteBounds="3.765, 7.21, 1.9700000000000002, 2.7493082682291665" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="a61efb37-a4a2-436a-b208-3c72c3fd7b5f" absoluteBounds="0.75, 1.125, 2, 5.8092268880208326">
+      <DataClassMoniker Name="/PaycodeDbDataContext/CardlessWithdrawalTransaction" />
+      <nestedChildShapes>
+        <elementListCompartment Id="62b0a605-4bf6-4af4-9dad-26fd62a22768" absoluteBounds="0.765, 1.585, 1.9700000000000002, 5.249226888020833" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="18171738-d628-463a-924e-93fd2f7ed77e" absoluteBounds="6.25, 3.25, 2, 1.5785953776041666">
+      <DataClassMoniker Name="/PaycodeDbDataContext/CardlessWithdrawalTransactionReversal" />
+      <nestedChildShapes>
+        <elementListCompartment Id="a0e2ac67-263a-4f42-a8e9-e11f746d3d13" absoluteBounds="6.265, 3.71, 1.9700000000000002, 1.0185953776041665" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <associationConnector edgePoints="[(2.75 : 4.02965413411458); (3.5 : 4.02965413411458)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+      <AssociationMoniker Name="/PaycodeDbDataContext/CardlessWithdrawalTransaction/CardlessWithdrawalTransaction_CardlessWithdrawalAuthorisation" />
+      <nodes>
+        <classShapeMoniker Id="a61efb37-a4a2-436a-b208-3c72c3fd7b5f" />
+        <classShapeMoniker Id="66221d58-fbb3-4d98-954d-d08e8a87d43b" />
+      </nodes>
+    </associationConnector>
+    <associationConnector edgePoints="[(5.5 : 4.03929768880208); (6.25 : 4.03929768880208)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+      <AssociationMoniker Name="/PaycodeDbDataContext/CardlessWithdrawalAuthorisation/CardlessWithdrawalAuthorisation_CardlessWithdrawalTransactionReversal" />
+      <nodes>
+        <classShapeMoniker Id="66221d58-fbb3-4d98-954d-d08e8a87d43b" />
+        <classShapeMoniker Id="18171738-d628-463a-924e-93fd2f7ed77e" />
+      </nodes>
+    </associationConnector>
+  </nestedChildShapes>
+</ordesignerObjectsDiagram>
