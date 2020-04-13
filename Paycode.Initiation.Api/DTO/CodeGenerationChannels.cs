@@ -5,7 +5,10 @@ using System.Web;
 
 namespace Paycode.Initiation.Api.DTO
 {
-    public class CodeGenerationChannels
+    public static class CodeGenerationChannels
     {
+        public const String USSD = "USSD";
+        public const String Mobile = "Mobile";
+        public const String INTERNET_BANKING = "INTERNET_BANKING";
     }
 }
