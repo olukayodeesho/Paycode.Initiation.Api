@@ -12,6 +12,7 @@ using NLog;
 using Paycode.Initiation.Api.dbml;
 using Paycode.Initiation.Api.DTO;
 using Paycode.Initiation.Api.Engine;
+using System.Transactions;
 
 namespace Paycode.Initiation.Api
 {
@@ -222,7 +223,7 @@ namespace Paycode.Initiation.Api
                             TransactionAmount = tokenrequest.Amount,
                             TransactionType = tokenrequest.transactionType,
                             TransactionReference = transactionreference,
-                            PayWithMobileToken = retobject.payWithMobileToken,//WICODE
+                            PayWithMobileToken = retobject.payWithMobileToken,
                             IsCanceled = false,
                             IsExpired = false,
                             IsTokenUsed = false
@@ -423,6 +424,184 @@ namespace Paycode.Initiation.Api
             return iswResponse;
 
 
+        }
+
+
+        public CardlessWithdrawalResponse AuthorizeTransaction(String IP, String TransactionID, string AccountNumber, string providerToken, String TransactionType, String SessionKey, decimal Amount)
+        {
+            var p = HttpContext.Current.Request.Headers;
+            PaycodeDbDataContext ctx = new PaycodeDbDataContext();
+
+            nLogger.Info("IP::: " + IP);
+            CardlessWithdrawalResponse res = null;
+
+            try
+            {
+                String IPs = ConfigurationManager.AppSettings["AllowedIPS"];
+                String[] allowedIPs = IPs.Split(new char[] { ';' });
+
+                CardlessWithdrawalTransaction rettransaction = ctx.CardlessWithdrawalTransactions.Where(pwmt => pwmt.AccountNumber == AccountNumber && pwmt.ProviderToken == providerToken).FirstOrDefault();
+
+
+
+                CardlessWithdrawalAuthorisationRequestLog plog = new CardlessWithdrawalAuthorisationRequestLog()
+                {
+                    AccountNumber = AccountNumber,
+                    Amount = Amount,
+                    RequestDate = DateTime.Now,
+                    ISW_IP = IP,
+                    TransactionID = TransactionID,
+                    TransactionType = TransactionType,
+                    ProviderToken = providerToken,
+                    IsValid = false,
+                    ResponseMessage = ""
+                };
+                ctx.CardlessWithdrawalAuthorisationRequestLogs.InsertOnSubmit(plog);
+                ctx.SubmitChanges();
+
+
+
+                if (!allowedIPs.Contains(IP))
+                {
+                    res = new CardlessWithdrawalResponse() { ResponseCode = "06", ResponseDescription = "Security Check Failed" };
+
+                }
+                else
+                    if (rettransaction == null)
+                {
+                    res = new CardlessWithdrawalResponse() { ResponseCode = "12", ResponseDescription = "Account Number/ Provider Token is not valid" };
+
+                }
+                else
+                {
+                    String signatureMethod = "SHA1";
+                    String CypherKey = String.Format("{0}|{1}|{2}", rettransaction.AccountNumber, rettransaction.ProviderToken, rettransaction.TransactionType);
+                    MessageDigest messageDigest = MessageDigest
+                        .GetInstance(signatureMethod);
+                    byte[] signatureBytes = messageDigest
+                      .Digest(Encoding.UTF8.GetBytes(CypherKey));  // encode signature as base 64 
+                    String signature = Convert.ToBase64String(signatureBytes);
+                    if (signature.Equals(SessionKey))
+                    {
+
+
+
+
+                        using (TransactionScope scope = new TransactionScope())
+                        {
+                            //Check if Token is valid
+                            if (rettransaction == null)
+                            {
+                                res = new CardlessWithdrawalResponse() { ResponseCode = "11", ResponseDescription = "Authorization Token is not Valid" };
+                            }
+                            else
+                                if (rettransaction.ExpiryDate < DateTime.Now || rettransaction.IsExpired == true)
+                            {
+                                //Check Token Expiry
+                                res = new CardlessWithdrawalResponse() { ResponseCode = "12", ResponseDescription = "Token has Expired" };
+                            }
+                            else if (rettransaction.IsTokenUsed == true)
+                            {
+                                res = new CardlessWithdrawalResponse() { ResponseCode = "12", ResponseDescription = "Token has already been used " };
+                            }
+                            else if (rettransaction.IsCanceled == true)
+                            {
+                                res = new CardlessWithdrawalResponse() { ResponseCode = "12", ResponseDescription = "Token has been cancelled" };
+                            }
+                            else
+                                if (rettransaction.TransactionAmount == rettransaction.AmountAuthorized)
+                            {
+                                res = new CardlessWithdrawalResponse() { ResponseCode = "12", ResponseDescription = "Token has already been used " };
+                            }
+                            else if (Amount > (rettransaction.TransactionAmount - rettransaction.AmountAuthorized))
+                            {
+                                res = new CardlessWithdrawalResponse() { ResponseCode = "13", ResponseDescription = "Invalid Amount" };
+                            }
+                            else
+                            {
+
+                                if (ctx.CardlessWithdrawalAuthorisations.Where(pwm => pwm.TransactionID == TransactionID).Any())
+                                {
+                                    res = new CardlessWithdrawalResponse() { ResponseCode = "26", ResponseDescription = "Transaction ID already used" };
+                                }
+                                else
+                                {
+                                    String resp = TransferFund(rettransaction.AccountNumber, ConfigurationManager.AppSettings["ISWPayableAccount"], Amount, "Cardless Withdrawal Transaction", plog);
+                                    nLogger.Info("Funds Transfer " + resp);
+                                    if ("00".Equals(resp))
+                                    {
+                                        CardlessWithdrawalAuthorisation pauthorisation = new CardlessWithdrawalAuthorisation()
+                                        {
+                                            AccountNumber = rettransaction.AccountNumber,
+                                            Amount = plog.Amount,
+                                            AuthorisationDate = DateTime.Now,
+                                            ISW_IP = IP,
+                                            CardlessWithdrawalTransactionID = rettransaction.ID,
+                                            TransactionID = TransactionID,
+                                            TransactionType = TransactionType,
+                                            IsReversed = false,
+                                            FinacleResponse = plog.FinacleResponse,
+                                            FinacleStan = plog.FinacleStan,
+                                            FinacleTransactionDateTime = plog.FinacleTransactionDateTime
+                                        };
+                                        ctx.CardlessWithdrawalAuthorisations.InsertOnSubmit(pauthorisation);
+                                        ctx.SubmitChanges();
+
+                                        rettransaction.TokenUsageCount = rettransaction.TokenUsageCount + 1;
+                                        rettransaction.AmountAuthorized = rettransaction.AmountAuthorized + pauthorisation.Amount;
+                                        ctx.SubmitChanges();
+
+                                        if (rettransaction.TransactionAmount == rettransaction.AmountAuthorized)
+                                        {
+                                            rettransaction.IsTokenUsed = true;
+                                        }
+                                        //Token can only be used once according to ISW new requirement
+                                        rettransaction.IsTokenUsed = true;
+                                        ctx.SubmitChanges();
+
+                                        plog.IsValid = true;
+
+                                        scope.Complete();
+
+                                        //PaymentAuthorisation
+                                        res = new CardlessWithdrawalResponse() { ResponseCode = "00", ResponseDescription = "Authorized" };
+                                    }
+                                    else
+                                    {
+                                        res = new CardlessWithdrawalResponse() { ResponseCode = "06", ResponseDescription = "Transaction Failed" };
+                                    }
+                                }
+                            }
+                            //10041
+
+
+                        }
+
+
+                    }
+                    else
+                    {
+                        // nLogger.Info("Security Check Failed");
+                        res = new CardlessWithdrawalResponse() { ResponseCode = "06", ResponseDescription = "Security Check Failed" };
+                        //Security Check Failed
+                    }
+                }
+                plog.ResponseMessage = res.ResponseCode + "|" + res.ResponseDescription;
+                ctx.SubmitChanges();
+            }
+            catch (Exception ex)
+            {
+                nLogger.Error(ex);
+                res = new CardlessWithdrawalResponse() { ResponseCode = "06", ResponseDescription = "An unknown error has occured" };
+            }
+            return res;
+            //return System.Guid.NewGuid().ToString().Substring(0, 10);
+
+        }
+
+        public String TransferFund(String SourceAccount, String DestinationAccount, decimal Amount, String Narration, CardlessWithdrawalAuthorisationRequestLog requestlog)
+        {
+           return "00";
         }
 
     }

@@ -53,9 +53,11 @@
       <HintPath>Dependencies\NLog.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Activities" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.Linq" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Transactions" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -209,19 +211,22 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\SampleDirection.cs" />
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
-    <Compile Include="Controllers\AccountController.cs" />
-    <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="Controllers\ValuesController.cs" />
+    <Compile Include="Controllers\PaycodeAuthorizationController.cs" />
+    <Compile Include="Controllers\PaycodeInitiationController.cs" />
     <Compile Include="dbml\PaycodeDb.designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>PaycodeDb.dbml</DependentUpon>
     </Compile>
     <Compile Include="DTO\CancelPayCodeRequest.cs" />
+    <Compile Include="DTO\CardlessWithdrawalResponse.cs" />
     <Compile Include="DTO\CodeGenerationChannels.cs" />
     <Compile Include="DTO\FrontEndPartners.cs" />
     <Compile Include="DTO\MessageDigest.cs" />
     <Compile Include="DTO\MobileTokenRequest.cs" />
+    <Compile Include="DTO\PaycodeGenerationResponse.cs" />
+    <Compile Include="DTO\PaycodeWithdrawalRequest.cs" />
+    <Compile Include="DTO\PaycodeRequest.cs" />
     <Compile Include="DTO\PaymentMethods.cs" />
     <Compile Include="DTO\PaymentMethodTypes.cs" />
     <Compile Include="DTO\PayWithMobileChannel.cs" />
@@ -230,6 +235,7 @@
     <Compile Include="DTO\TokenRequest.cs" />
     <Compile Include="DTO\TransactionTypes.cs" />
     <Compile Include="Engine\TokenGeneration.cs" />
+    <Compile Include="Engine\Util.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
